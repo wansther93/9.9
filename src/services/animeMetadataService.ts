@@ -142,6 +142,7 @@ export function isAnimeRichDataIncomplete(data: DynamicAnimeRichData | null): bo
   if (!data) return true;
   const hasCharacters = Array.isArray(data.characters) && data.characters.length > 0;
   const hasThemes = Array.isArray(data.themes) && data.themes.length > 0;
+  const hasPlayableThemes = hasThemes && data.themes.some((t) => Boolean(t.videoUrl || t.audioUrl));
   const hasStreaming = Array.isArray(data.streamingLinks) && data.streamingLinks.length > 0;
 
   // Se não tem absolutamente nenhum dado rico, está incompleto
@@ -149,7 +150,12 @@ export function isAnimeRichDataIncomplete(data: DynamicAnimeRichData | null): bo
     return true;
   }
 
-  // Se tem menos de 7 dias, está completo
+  // Se os temas foram gravados sem mídias de áudio/vídeo, marca como incompleto para auto-recuperar a reprodução
+  if (hasThemes && !hasPlayableThemes) {
+    return true;
+  }
+
+  // Se tem mais de 7 dias, está desatualizado
   if (data.cachedAt && Date.now() - data.cachedAt > RICH_DATA_TTL) {
     return true;
   }

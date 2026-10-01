@@ -824,7 +824,7 @@ export const CollectionAnimeModal: React.FC<CollectionAnimeModalProps> = ({
                   <Music className="w-3.5 h-3.5 text-purple-400" />
                   <span>Músicas Oficiais (Aberturas & Encerramentos)</span>
                 </h3>
-                {themes.some((t) => t.videoUrl) && (
+                {themes.some((t) => t.videoUrl || t.audioUrl) && (
                   <span className="text-[10px] text-purple-300/80 font-medium">
                     Toque para ouvir
                   </span>
@@ -846,8 +846,9 @@ export const CollectionAnimeModal: React.FC<CollectionAnimeModalProps> = ({
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       {displayedThemes.map((theme, idx) => {
                         const isOp = theme.themeType === 'OP';
-                        const isPlaying = Boolean(activeMediaUrl && activeMediaUrl === theme.videoUrl);
-                        const hasVideo = Boolean(theme.videoUrl);
+                        const mediaUrl = theme.videoUrl || theme.audioUrl;
+                        const isPlaying = Boolean(activeMediaUrl && activeMediaUrl === mediaUrl);
+                        const hasMedia = Boolean(mediaUrl);
 
                         return (
                           <div
@@ -855,8 +856,8 @@ export const CollectionAnimeModal: React.FC<CollectionAnimeModalProps> = ({
                             onClick={() => {
                               if (isPlaying) {
                                 setActiveMediaUrl(null);
-                              } else if (hasVideo) {
-                                setActiveMediaUrl(theme.videoUrl || null);
+                              } else if (hasMedia) {
+                                setActiveMediaUrl(mediaUrl || null);
                               } else {
                                 window.open(
                                   `https://www.youtube.com/results?search_query=${encodeURIComponent(
@@ -878,8 +879,8 @@ export const CollectionAnimeModal: React.FC<CollectionAnimeModalProps> = ({
                             title={
                               isPlaying
                                 ? 'Clique para fechar o reprodutor'
-                                : hasVideo
-                                ? 'Clique para reproduzir o vídeo oficial aqui'
+                                : hasMedia
+                                ? 'Clique para reproduzir o vídeo/áudio oficial aqui'
                                 : 'Clique para buscar no YouTube'
                             }
                           >
@@ -887,7 +888,7 @@ export const CollectionAnimeModal: React.FC<CollectionAnimeModalProps> = ({
                             <div className="flex items-center justify-between gap-2">
                               <div className="min-w-0 flex-1 space-y-0.5">
                                 <div className="flex items-center gap-1.5">
-                                  {hasVideo ? (
+                                  {hasMedia ? (
                                     <Play
                                       className={`w-3 h-3 shrink-0 fill-current ${
                                         isPlaying
